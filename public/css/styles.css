@@ -1,0 +1,16 @@
+#app ul li {
+    margin: 10px;
+}
+
+#form-container {
+    margin-top: 30px;
+}
+
+#name-user-logged {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+#marca {
+    margin-left: 20px;
+}

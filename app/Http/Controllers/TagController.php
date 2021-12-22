@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Repositories\ProductRepository;
+use App\Models\Tag;
 use Illuminate\Http\Request;
+use App\Repositories\TagRepository;
 
-class ProductController extends Controller
+class TagController extends Controller
 {
     private $repository;
 
-    public function __construct(Product $model)
+    public function __construct(Tag $model)
     {
-        $this->repository = new ProductRepository($model);
+        $this->repository = new TagRepository($model);
     }
     /**
      * Display a listing of the resource.
@@ -21,9 +21,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = $this->repository->all();
-
-        return view('app.products.list', ['products' => $products]);
+        return view('app.tags.list');
     }
 
     /**
@@ -50,10 +48,10 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show(Tag $tag)
     {
         //
     }
@@ -61,10 +59,10 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit(Tag $tag)
     {
         //
     }
@@ -73,10 +71,10 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Tag $tag)
     {
         //
     }
@@ -84,10 +82,10 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Product  $product
+     * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Tag $tag)
     {
         //
     }
