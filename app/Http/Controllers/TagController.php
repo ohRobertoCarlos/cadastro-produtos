@@ -21,7 +21,9 @@ class TagController extends Controller
      */
     public function index()
     {
-        return view('app.tags.list');
+        $tags = $this->repository->all();
+
+        return view('app.tags.list', ['tags' => $tags]);
     }
 
     /**
@@ -31,7 +33,7 @@ class TagController extends Controller
      */
     public function create()
     {
-        //
+        return view('app.tags.create');
     }
 
     /**
@@ -42,7 +44,15 @@ class TagController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:2',
+        ],[
+            'name.min' => 'Uma tag tem no mínimo 2 caracteres',
+        ]);
+
+        $this->repository->store($request);
+
+        return redirect()->route('tags.index');
     }
 
     /**
@@ -62,9 +72,10 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function edit(Tag $tag)
+    public function edit($id)
     {
-        //
+        $tag = $this->repository->find($id);
+        return view('app.tags.edit', ['tag' => $tag]);
     }
 
     /**
@@ -74,9 +85,13 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tag $tag)
+    public function update(Request $request,$id)
     {
-        //
+        $tagObj = $this->repository->find($id);
+        $tagObj->name = $request->input('name');
+        $tagObj->update();
+
+        return redirect()->route('tags.index');
     }
 
     /**
@@ -85,8 +100,8 @@ class TagController extends Controller
      * @param  \App\Models\Tag  $tag
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tag $tag)
+    public function destroy($id)
     {
-        //
+        dd($this->repository->find($id));
     }
 }

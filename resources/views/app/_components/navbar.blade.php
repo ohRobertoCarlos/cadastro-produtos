@@ -1,5 +1,14 @@
 <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
     <a class="navbar-brand" id="marca" href="#">Cadastro de Produtos</a>
+
+    @guest
+
+    @else
+        <a class="btn btn-primary m-2" href="{{ route('products.index') }}">Products</a>
+        <a class="btn btn-primary m-2" href="{{ route('tags.index') }}">Tags</a>
+    @endguest
+
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#conteudoNavbarSuportado" aria-controls="conteudoNavbarSuportado" aria-expanded="false" aria-label="Alterna navegação">
         <span class="navbar-toggler-icon"></span>
     </button>
