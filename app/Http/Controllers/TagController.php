@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Tag;
+use App\Models\ProductTag;
+
 use Illuminate\Http\Request;
+
 use App\Repositories\TagRepository;
+use App\Repositories\ProductTagRepository;
 
 class TagController extends Controller
 {
@@ -102,6 +106,19 @@ class TagController extends Controller
      */
     public function destroy($id)
     {
-        dd($this->repository->find($id));
+        $tag = $this->repository->find($id);
+        $repoProductTag = new ProductTagRepository(new ProductTag());
+
+        foreach($tag->products as $product)
+        {
+            $repoProductTag
+                ->deleteWhere(['product_id' => $product->id,
+                 'tag_id' => $tag->id
+                ]);
+        }
+
+        $tag->delete();
+
+        return redirect()->route('tags.index');
     }
 }

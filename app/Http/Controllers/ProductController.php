@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Tag;
 use App\Models\ProductTag;
+
 use App\Repositories\ProductRepository;
 use App\Repositories\ProductTagRepository;
 use App\Repositories\TagRepository;
+
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -109,18 +111,24 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required|min:2|exists:products,name',
+            'name' => 'required|min:2',
             'tag' => 'required|exists:tags,id',
         ],[
             'required' => 'o campo :attribute é requerido',
             'name.min' => 'O nome do produto deve ter no mínimo 3 caracteres',
             'exists' => 'o campo :attribute não existe'
         ]);
-        $productObj = $this->repository->find($id);
 
-        $oldTagId = $productObj->tags[0]->id;
+        $productObj = $this->repository->find($id);
+        $oldTagId = $productObj->tags->first();
         $newTagId = $request->input('tag');
         $productId = $id;
+
+        if($productObj->name != $request->input('name'))
+        {
+            $productObj->name = $request->input('name');
+            $productObj->save();
+        }
 
         $repoProductTag = new ProductTagRepository(new ProductTag());
         $repoProductTag
