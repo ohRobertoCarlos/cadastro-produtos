@@ -54,11 +54,9 @@ class ProductController extends Controller
     {
         $request->validate([
             'name' => 'required|min:2',
-            'tag' => 'required|integer'
         ],[
             'required' => 'o campo :attribute é requirido',
-            'name.min' => 'o campo nome do produto tem no mínimo 4 caracteres',
-            'integer' => 'selecione uma tag'
+            'name.min' => 'o campo nome do produto tem no mínimo 4 caracteres'
         ]
         );
 
@@ -68,9 +66,15 @@ class ProductController extends Controller
             return redirect()->route('products.create');
 
         $product = $this->repository->store($request);
-
         $repo = new ProductTagRepository(new ProductTag());
-        $repo->create(['product_id' => $product->id, 'tag_id' => $request->input('tag')]);
+
+        if($request->input('tag') != null)
+        {
+            foreach($request->input('tag') as $tag)
+            {
+                $repo->create(['product_id' => $product->id, 'tag_id' => $tag]);
+            }
+        }
 
         return redirect()->route('products.index');
     }
@@ -110,32 +114,65 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'name' => 'required|min:2',
-            'tag' => 'required|exists:tags,id',
-        ],[
+        $request->validate(['name' => 'required|min:2','tag' => 'exists:tags,id'],[
             'required' => 'o campo :attribute é requerido',
-            'name.min' => 'O nome do produto deve ter no mínimo 3 caracteres',
+            'name.min' => 'O nome do produto deve ter no mínimo 2 caracteres',
             'exists' => 'o campo :attribute não existe'
         ]);
-
-        $productObj = $this->repository->find($id);
-        $oldTagId = $productObj->tags->first();
-        $newTagId = $request->input('tag');
-        $productId = $id;
-
-        if($productObj->name != $request->input('name'))
-        {
-            $productObj->name = $request->input('name');
-            $productObj->save();
-        }
-
         $repoProductTag = new ProductTagRepository(new ProductTag());
-        $repoProductTag
-            ->updateWhere(['product_id' => $id,
-             'tag_id' => $oldTagId
-            ],$productId, $newTagId
-        );
+        $product = $this->repository->find($id);
+        $oldTags = $product->tags;
+
+        if($product->name != $request->input('name'))
+        {
+            $product->name = $request->input('name');
+            $product->save();
+        }
+        // Removendo tags caso o usuário remova alguma tag
+        if($request->input('tag') == null)
+        {
+            if(count($oldTags) > 0)
+            {
+                foreach($oldTags as $oldTag)
+                {
+                    $repoProductTag
+                        ->deleteWhere(['product_id' => $product->id, 'tag_id' => $oldTag->id]);
+                }
+            }
+        }
+        // Se haver alguma tag no request
+        if($request->input('tag') != null)
+        {   //deletar tags se retiradas
+            if(count($oldTags) > count($request->input('tag')))
+            {
+                foreach($oldTags as $oldTag)
+                {   // Verificar se a tag antiga está no request atual, se não, será apagada.
+                    if(!in_array($oldTag->id, $request->input('tag')))
+                        $repoProductTag->deleteWhere(['product_id' => $product->id, 'tag_id' => $oldTag->id]);
+                }
+            }
+
+            foreach($request->input('tag') as $tagId)
+            {   // checando se existem tags antigas
+                if(count($oldTags) > 0)
+                {
+                    foreach($oldTags as $oldTag)
+                    {
+                        if($tagId != $oldTag->id)
+                        {
+                            $repoProductTag
+                            ->updateWhere(
+                                ['product_id' => $product->id,'tag_id' => $oldTag->id]
+                                ,$product->id, $tagId
+                            );
+                        }
+                    }
+                }else
+                {  // Adicionando tags à produtos por não haver tags antigas
+                     $repoProductTag->create(['product_id' => $product->id, 'tag_id' => $tagId]);
+                }
+            }
+        }
 
         return redirect()->route('products.index');
     }
@@ -148,14 +185,18 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        $tagId = $this->repository->find($id)->tags[0]->id;
+        $product = $this->repository->find($id);
         $repoProductTag = new ProductTagRepository(new ProductTag());
-        $repoProductTag
-            ->deleteWhere(['product_id' => $id,
-             'tag_id' => $tagId
-            ]);
 
-        $this->repository->find($id)->delete();
+        foreach($product->tags as $tag)
+        {
+            $repoProductTag
+                ->deleteWhere(['product_id' => $product->id,
+                 'tag_id' => $tag->id
+                ]);
+        }
+
+        $product->delete();
 
         return redirect()->route('products.index');
     }

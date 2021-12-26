@@ -3,7 +3,7 @@
 @section('title','Editar Produto')
 
 @section('content')
-    <div class="container mt-5 col-6">
+    <div class="container mt-5 col-8">
         @if ($errors->has('name') || $errors->has('tag') )
             <div class="alert alert-danger">
                 {{ $errors->first('name') }}
@@ -17,15 +17,16 @@
             <label class="form-label" for="product_name">Nome</label>
             <input id="product_name" name="name" class="form-control" type="text" value="{{ $product->name }}" required="required">
             <section class="m-3">
-
-                <select class="form-select" name="tag">
-                    <option >Selecione uma Tag</option>
-                    @foreach ($tags as $tag)
-                        <option value="{{ $tag->id }}" {{ ($product->tags[0]->id ?? old('id')) == $tag->id ? 'selected' : '' }}>{{ $tag->name }}</option>
-                    @endforeach
-                </select>
-
-
+                @foreach ($tags as $tag)
+                    <div>
+                        <input type="checkbox" name="tag[]" value="{{ $tag->id }}" id="{{ $tag->name }}"
+                        @foreach ($product->tags as $tagItem)
+                            {{ ($tagItem->id ?? old('id')) == $tag->id ? 'checked' : '' }}
+                        @endforeach
+                        >
+                        <label class="form-label" for="{{ $tag->name }}"> {{ $tag->name }}</label>
+                    </div>
+                @endforeach
             </section>
 
             <button class="btn btn-primary mt-3" type="submit">Atualizar</button>

@@ -3,7 +3,7 @@
 @section('title','Cadastrar Tag')
 
 @section('content')
-    <div class="container mt-5 col-6">
+    <div class="container mt-5 col-8">
         @if ($errors->has('name'))
             <div class="alert alert-danger">
                 {{ $errors->first('name') }}

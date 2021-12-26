@@ -3,7 +3,7 @@
 @section('title','Cadastrar Produto')
 
 @section('content')
-    <div class="container mt-5 col-6">
+    <div class="container mt-5 col-8">
         @if ($errors->has('name') || $errors->has('tag') )
             <div class="alert alert-danger">
                 {{ $errors->first('name') }}
@@ -17,15 +17,12 @@
             <input id="product_name" name="name" class="form-control" type="text" required="required">
 
             <section class="m-3">
-
-                <select class="form-select" name="tag">
-                    <option >Selecione uma Tag</option>
-                    @foreach ($tags as $tag)
-                        <option value="{{ $tag->id }}">{{ $tag->name }}</option>
-                    @endforeach
-                </select>
-
-
+                @foreach ($tags as $tag)
+                <div>
+                    <input type="checkbox" name="tag[]" value="{{ $tag->id }}" id="{{ $tag->name }}">
+                    <label class="form-label" for="{{ $tag->name }}"> {{ $tag->name }}</label>
+                </div>
+                @endforeach
             </section>
 
             <button class="btn btn-primary mt-3" type="submit">Cadastrar</button>

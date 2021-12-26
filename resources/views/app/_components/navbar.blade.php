@@ -4,8 +4,8 @@
     @guest
 
     @else
-        <a class="btn btn-primary m-2" href="{{ route('products.index') }}">Products</a>
-        <a class="btn btn-primary m-2" href="{{ route('tags.index') }}">Tags</a>
+        <a class="btn btn-info m-2" href="{{ route('products.index') }}">Products</a>
+        <a class="btn btn-info m-2" href="{{ route('tags.index') }}">Tags</a>
     @endguest
 
 

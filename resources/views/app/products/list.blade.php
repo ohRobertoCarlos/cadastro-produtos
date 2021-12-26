@@ -16,7 +16,7 @@
                 </th>
 
                 <th scope="row">
-                    Tag
+                    Tags
                 </th>
 
                 <th scope="row">Deletar</th>
@@ -33,7 +33,7 @@
 
                     <td scope="row">
                         @foreach ($product->tags as $tag)
-                            {{$tag->name}}
+                            #{{$tag->name}}
                         @endforeach
                     </td>
 
